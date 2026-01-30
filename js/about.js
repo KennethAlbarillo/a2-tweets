@@ -11,11 +11,13 @@ function parseTweets(runkeeper_tweets) {
 	
 	//This line modifies the DOM, searching for the tag with the numberTweets ID and updating the text.
 	//It works correctly, your task is to update the text of the other tags in the HTML file!
+	/*
 	const completedEventWordOne = "completed";
 	const completedEventWordTwo = "posted";
 	const liveEventWordOne = "watch";
 	const liveEventWordTwo = "right now";
 	const achievedEventWord = "achieved";
+	*/
 	let dateElements = [];
 	let earliestDate = [0,0,0];
 	let latestDate = [0,0,0];
@@ -27,24 +29,26 @@ function parseTweets(runkeeper_tweets) {
 	let liveEvents = 0;
 	let achievedEvents = 0;
 	let otherEvents = 0;
+	let userWritten = 0;
 	for (const dictonaryElement of tweet_array){
+		if (dictonaryElement.source === "completed_event"){
+			completedEvents += 1;
+			if (dictonaryElement.written){
+				userWritten += 1;
+			}
+		} else if (dictonaryElement.source === "live_event"){
+			liveEvents += 1;
+		} else if (dictonaryElement.source === "achievement"){
+			achievedEvents += 1;
+		} else {
+			otherEvents += 1;
+		}
 		for (const key in dictonaryElement){
-			console.log(`${key}, Type: ${typeof dictonaryElement[key]}`);
-			if (key === "text"){
-				text = dictonaryElement[key];
-				if (text.toLowerCase().includes(completedEventWordOne) || text.toLowerCase().includes(completedEventWordTwo)){
-					completedEvents += 1;
-				} else if (text.toLowerCase().includes(liveEventWordOne) && text.toLowerCase().includes(liveEventWordTwo)){
-					liveEvents += 1;
-				} else if (text.toLowerCase().includes(achievedEventWord)){
-					achievedEvents += 1;
-				} else {
-					otherEvents += 1;
-				}
-			} else if (key === "time"){
+			// console.log(`${key}, Type: ${typeof dictonaryElement[key]}`);
+			if (key === "time"){
 				text = dictonaryElement[key].toLocaleDateString(undefined);
 				dateElements = text.split('/');
-				console.log(`Text : ${text}\nWords: ${dateElements}`);
+				// console.log(`Text : ${text}\nWords: ${dateElements}`);
 				month = parseInt(dateElements[0], 10);
 				day = parseInt(dateElements[1], 10);
 				year = parseInt(dateElements[2], 10);
@@ -91,11 +95,13 @@ function parseTweets(runkeeper_tweets) {
 	const options = {month: "long", day: 'numeric', year: "numeric"};
 	const earliestDateType = new Date(earliestDate[2], earliestDate[0] - 1, earliestDate[1]);
 	const latestDateType = new Date(latestDate[2], latestDate[0] - 1, latestDate[1]);
-	console.log(earliestDateType.toLocaleString('default', options));
-	console.log(latestDateType.toLocaleString('default', options));
+	// console.log(earliestDateType.toLocaleString('default', options));
+	// console.log(latestDateType.toLocaleString('default', options));
 	document.getElementById('numberTweets').innerText = tweet_array.length;
 	document.getElementById('firstDate').innerText = earliestDateType.toLocaleString('default', options);
 	document.getElementById('lastDate').innerText = latestDateType.toLocaleString('default', options);
+	
+	// Replace number of events (???) with actual numbers
 	document.querySelectorAll('.completedEvents').forEach(element =>{
 		element.innerText = completedEvents;
 	});
@@ -107,6 +113,37 @@ function parseTweets(runkeeper_tweets) {
 	});
 	document.querySelectorAll('.miscellaneous').forEach(element =>{
 		element.innerText = otherEvents;
+	});
+	let percentage = 0;
+	let percentageStr = "";
+	// Replace (?.??%) with actual percentage
+	document.querySelectorAll('.completedEventsPct').forEach(element =>{
+		percentage = completedEvents/tweet_array.length * 100;
+		percentageStr = percentage.toFixed(1);
+		element.innerText = percentageStr + "%";
+	});
+	document.querySelectorAll('.liveEventsPct').forEach(element => {
+		percentage = liveEvents/tweet_array.length * 100;
+		percentageStr = percentage.toFixed(1);
+		element.innerText = percentageStr + "%";
+	});
+	document.querySelectorAll('.achievementsPct').forEach(element => {
+		percentage = achievedEvents/tweet_array.length * 100;
+		percentageStr = percentage.toFixed(1);
+		element.innerText = percentageStr + "%";
+	});
+	document.querySelectorAll('.miscellaneousPct').forEach(element => {
+		percentage = otherEvents/tweet_array.length * 100;
+		percentageStr = percentage.toFixed(1);
+		element.innerText = percentageStr + "%";
+	});
+	document.querySelectorAll('.written').forEach(element => {
+		element.innerText = userWritten;
+	});
+	document.querySelectorAll('.writtenPct').forEach(element => {
+		percentage = userWritten/tweet_array.length * 100;
+		percentageStr = percentage.toFixed(1);
+		element.innerText = percentageStr + "%";
 	});
 }
 		
