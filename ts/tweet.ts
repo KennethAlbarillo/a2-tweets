@@ -55,12 +55,12 @@ class Tweet {
         // Possible activites: ski, yoga, walk, workout, Freestyle, run, bike, swim, row
         // There's different types of workouts, but for now ill keep it general
         // There's one called 'activity', but I won't count it
-        const activitesArray: string[] = ['ski', 'row', 'swim', 'bike', 'walk', 'run'];
+        const activitesArray: string[] = ['ski', 'elliptical', 'yoga', 'freestyle','row', 'swim', 'bike', 'walk', 'run'];
         // console.log(`Boolean: ${this.source == "completed_event"} |Text : ${this.text}`);
         if(this.source == "completed_event"){
             for (const word in activitesArray){
                 // console.log(`Word : ${activitesArray[word]}`);
-                if (this.text.search(activitesArray[word]) != -1){return activitesArray[word];}
+                if (this.text.toLowerCase().search(activitesArray[word]) != -1){return activitesArray[word];}
             }
         }
         //TODO: parse the activity type from the text of the tweet
@@ -91,6 +91,11 @@ class Tweet {
 
     getHTMLTableRow(rowNumber:number):string {
         //TODO: return a table row which summarizes the tweet with a clickable link to the RunKeeper activity
-        return "<tr></tr>";
+        let trString = "<tr>";
+        trString += `<td>${rowNumber}</td>`;
+        trString += `<td>${this.activityType}</td>`;
+        trString += `<td>${this.text}</td>`;
+        trString += "</tr>";
+        return trString;
     }
 }

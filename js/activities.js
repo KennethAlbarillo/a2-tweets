@@ -18,11 +18,14 @@ function parseTweets(runkeeper_tweets) {
 
 	const activityInterface = {
 		ski: {"activitiesCompleted": 0, "distance": 0},
+		freestyle: {"activitiesCompleted": 0, "distance": 0},
+		elliptical: {"activitiesCompleted": 0, "distance": 0},
+		yoga: {"activitiesCompleted": 0},
 		row: {"activitiesCompleted": 0, "distance": 0},
 		swim: {"activitiesCompleted": 0, "distance": 0},
 		bike: {"activitiesCompleted": 0, "distance": 0},
 		walk: {"activitiesCompleted": 0, "distance": 0},
-		run: {"activitiesCompleted": 0, "distance": 0}
+		run: {"activitiesCompleted": 0, "distance": 0},
 	}
 
 	const daysWithDistance = [
@@ -64,25 +67,25 @@ function parseTweets(runkeeper_tweets) {
 	};
 
 	//TODO: create a new array or manipulate tweet_array to create a graph of the number of tweets containing each type of activity.
-	let avgLargest = {name: "", distance: 0};
-	let avgSmallest = {name: "", distance: Infinity};
-	// console.log(JSON.stringify(activityInterface, null, 2));
+	// let avgLargest = {name: "", distance: 0};
+	// let avgSmallest = {name: "", distance: Infinity};
+	// // console.log(JSON.stringify(activityInterface, null, 2));
 
-	for (let activity in activityInterface){
-		const currentAverage = activityInterface[activity]["distance"]/activityInterface[activity]["activitiesCompleted"];
-		// console.log(`Activity : ${activity} | Average : ${currentAverage}`);
-		// console.log(`Largest :\n${avgLargest.name}'s Distance : ${avgLargest.distance} | Current : ${currentAverage}\n Boolean : ${avgLargest.distance < currentAverage}`);
-		if (currentAverage > avgLargest.distance){
-			avgLargest.name = activity;
-			avgLargest.distance = currentAverage;
-		}
-		// console.log(`Smallest :\n${avgSmallest.name}'s Distance : ${avgSmallest.distance} | Current : ${currentAverage}\n Boolean : ${avgSmallest.distance > currentAverage}`);
-		if (currentAverage < avgSmallest.distance){
-			avgSmallest.name = activity;
-			avgSmallest.distance = currentAverage;
-		}
-		// console.log(`avgLargest.distance : ${avgLargest.distance}\navgSmallest.distance : ${avgSmallest.distance}`);
-	}
+	// for (let activity in activityInterface){
+	// 	const currentAverage = activityInterface[activity]["distance"]/activityInterface[activity]["activitiesCompleted"];
+	// 	// console.log(`Activity : ${activity} | Average : ${currentAverage}`);
+	// 	// console.log(`Largest :\n${avgLargest.name}'s Distance : ${avgLargest.distance} | Current : ${currentAverage}\n Boolean : ${avgLargest.distance < currentAverage}`);
+	// 	if (currentAverage > avgLargest.distance){
+	// 		avgLargest.name = activity;
+	// 		avgLargest.distance = currentAverage;
+	// 	}
+	// 	// console.log(`Smallest :\n${avgSmallest.name}'s Distance : ${avgSmallest.distance} | Current : ${currentAverage}\n Boolean : ${avgSmallest.distance > currentAverage}`);
+	// 	if (currentAverage < avgSmallest.distance){
+	// 		avgSmallest.name = activity;
+	// 		avgSmallest.distance = currentAverage;
+	// 	}
+	// 	// console.log(`avgLargest.distance : ${avgLargest.distance}\navgSmallest.distance : ${avgSmallest.distance}`);
+	// }
 
 	// console.log(`Longest Distance : ${avgLargest["distance"]} mile ${avgLargest["name"]}`);
 	// console.log(`Shortest Distance : ${avgSmallest["distance"]} mile ${avgSmallest["name"]}`);
@@ -92,13 +95,25 @@ function parseTweets(runkeeper_tweets) {
 			name, ...items
 		})
 	);
+	const mostPopular = {};
 	sortedInterface.sort((a,b) => b.activitiesCompleted - a.activitiesCompleted);
 	firstMost = sortedInterface[0].name;
 	secondMost = sortedInterface[1].name;
 	thirdMost = sortedInterface[2].name;
-	// console.log(`first : ${firstMost}\nsecond: ${secondMost}\nthird: ${thirdMost}`);
-	
-	// Pick weekend or weekdays
+	mostPopular[firstMost] = {distance: sortedInterface[0].distance};
+	mostPopular[secondMost] = {distance: sortedInterface[1].distance};
+	mostPopular[thirdMost] = {distance: sortedInterface[2].distance};
+	// console.log(`first : ${sortedInterface[0].distance}\nsecond: ${sortedInterface[1].distance}\nthird: ${sortedInterface[2].distance}`);
+	let avgLargest = "";
+	let avgSmallest = "";
+	const sortedPop = Object.entries(mostPopular).map(
+		([name, items]) => ({
+			name, ...items
+		})
+	);
+	sortedPop.sort((a,b) => b.distance - a.distance);
+	avgLargest = sortedPop[0];
+	avgSmallest = sortedPop[2];
 	weekdayOrWeekendLonger = "";
 	if (weekdayCount > weekendCount){
 		weekdayOrWeekendLonger = "Weekdays";
