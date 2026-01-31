@@ -52,10 +52,22 @@ class Tweet {
     }
 
     get activityType():string {
-        if (this.source != 'completed_event') {
-            return "unknown";
+        // Possible activites: ski, yoga, walk, workout, Freestyle, run, bike, swim, row
+        // There's different types of workouts, but for now ill keep it general
+        // There's one called 'activity', but I won't count it
+        const activitesArray: string[] = ['ski', 'row', 'swim', 'bike', 'walk', 'run'];
+        // console.log(`Boolean: ${this.source == "completed_event"} |Text : ${this.text}`);
+        if(this.source == "completed_event"){
+            for (const word in activitesArray){
+                // console.log(`Word : ${activitesArray[word]}`);
+                if (this.text.search(activitesArray[word]) != -1){return activitesArray[word];}
+            }
         }
         //TODO: parse the activity type from the text of the tweet
+        // Just completed a 4.87 mi walk | 5 completed
+        // Watch my run | 3 live_event
+        // Just posted a meditation | 4 completed
+        // 
         return "";
     }
 
@@ -64,7 +76,17 @@ class Tweet {
             return 0;
         }
         //TODO: prase the distance from the text of the tweet
-        return 0;
+        const textArray: string[] = this.text.split(" ");
+        if (textArray[4] !== "mi" && textArray[4] !== "km"){
+            // console.log(this.text);
+            return 0;
+        }
+        let distance = parseFloat(textArray[3]);
+        if (textArray[4] === "km"){
+            distance /= 1.609;
+        }
+
+        return Math.round(distance * 100)/100;
     }
 
     getHTMLTableRow(rowNumber:number):string {
